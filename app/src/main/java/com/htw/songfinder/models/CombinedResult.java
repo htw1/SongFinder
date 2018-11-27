@@ -1,38 +1,36 @@
 package com.htw.songfinder.models;
 import android.util.Pair;
-import com.htw.songfinder.models.iTuneModel.ResultiTune;
+import com.annimon.stream.Collectors;
 import com.htw.songfinder.models.iTuneModel.RootiTune;
-import com.htw.songfinder.models.lastFmModel.ArtistLastFm;
-import com.htw.songfinder.models.lastFmModel.RootLastFm;
+import com.htw.songfinder.models.lastFmModel.NewRootLastFm;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.annimon.stream.Collectors.toCollection;
+import static com.annimon.stream.Collectors.toList;
 
 public class CombinedResult {
 
-    List<Pair<String,String>> nameAndPhotoResults;
-    private final RootiTune ituneResult;
-    private final RootLastFm lastFmResult;
+    List<Pair<String,String>> nameAndPhotoResults =  new ArrayList<>() ;
 
-    public CombinedResult(RootiTune ituneResult, RootLastFm lastFmResult) {
+    private final RootiTune ituneResult;
+    private final NewRootLastFm lastFmResult;
+
+    public CombinedResult(RootiTune ituneResult, NewRootLastFm lastFmResult) {
         this.ituneResult = ituneResult;
         this.lastFmResult = lastFmResult;
     }
 
     public List<Pair<String,String>> getArtistsWithPhoto () {
-
         nameAndPhotoResults = new ArrayList<>() ;
 
-        if (ituneResult.getListSongs() != null){
-            for (ResultiTune item : ituneResult.getListSongs() ){
-                nameAndPhotoResults.add(new Pair <String,String> (item.getArtistName(),item.getArtworkUrl100() ));
-            }
-        }
-        if(lastFmResult.getResults().getArtistmatches().getListOfLatsFmArtists() != null) {
-            for (ArtistLastFm item : lastFmResult.getResults().getArtistmatches().getListOfLatsFmArtists())
-                nameAndPhotoResults.add(new Pair<String, String>(item.getName(),item.getImage().get(4).getText()));
-        }
+        nameAndPhotoResults.addAll(com.annimon.stream.Stream.of(ituneResult.getListSongs())
+                .map(item->new Pair <String,String> (item.getSongName(),item.getArtworkUrl100() ))
+                .collect(Collectors.toList()));
+        nameAndPhotoResults.addAll(com.annimon.stream.Stream.of(lastFmResult.getToptracks().getTrack())
+                .map(item-> new Pair<String,String>(item.getName(),item.getImage().get(3).getText()))
+                .collect(Collectors.toList()));
+
         return nameAndPhotoResults;
     }
-
 }

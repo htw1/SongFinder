@@ -92,6 +92,7 @@ public class MainListFragment extends Fragment implements RecyclerViewClickListe
                 binding.setIsLoading(false);
                 loadOnlineView();
                 if (apiResponse.combinedResult.getArtistsWithPhoto() != null){
+                    //mainAdapter.notifyDataSetChanged();
                     mainAdapter.setProjectList(apiResponse.combinedResult.getArtistsWithPhoto());
                     combinedLocalResult = apiResponse.combinedResult;
                 }

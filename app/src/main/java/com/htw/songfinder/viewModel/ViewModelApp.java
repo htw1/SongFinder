@@ -4,7 +4,7 @@ import android.arch.lifecycle.ViewModel;
 import com.htw.songfinder.MainApplication;
 import com.htw.songfinder.models.CombinedResult;
 import com.htw.songfinder.models.iTuneModel.RootiTune;
-import com.htw.songfinder.models.lastFmModel.RootLastFm;
+import com.htw.songfinder.models.lastFmModel.NewRootLastFm;
 import com.htw.songfinder.network.Services.ServiceItune;
 import com.htw.songfinder.network.Services.ServiceLastFm;
 import com.htw.songfinder.network.procesDialog.ApiResponse;
@@ -12,12 +12,8 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.disposables.SerialDisposable;
-import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -57,7 +53,7 @@ public class ViewModelApp extends ViewModel {
     public Observable getMergedObservable (String query) {
 
         Observable<RootiTune> iTuneObservable =serviceItune.getItuneArtistNameRx2NoList(ServiceItune.API_ITUNE_BASE_FULL_URL,query);
-        Observable <RootLastFm>  lastFmObservable = serviceLastFm.searchArtistRx(ServiceLastFm.API_LAST_FM_FULL_URL, query, ServiceLastFm.KEY_LAST_FM,"json");
+        Observable<NewRootLastFm> lastFmObservable = serviceLastFm.searchArtistRx(ServiceLastFm.API_LAST_FM_FULL_URL, query, ServiceLastFm.KEY_LAST_FM,"json");
 
         return iTuneObservable.flatMap((Function<RootiTune, ObservableSource<CombinedResult>>) rootiTune -> Observable.just(rootiTune).zipWith(lastFmObservable,
                 (rootiTune1, rootLastFm) -> new CombinedResult(rootiTune1, rootLastFm)));
